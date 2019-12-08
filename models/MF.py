@@ -33,7 +33,7 @@ class RNNMatrixFactorization(nn.Module):
             nn.ReLU()
         )
 
-    def forward(self, user_batch, shop_batch, previous_shop_batch):
+    def forward(self, hours, user_batch, shop_batch, previous_shop_batch):
         batch_size = user_batch.shape[1]
         user_emb = self.user_encoder(user_batch).view(-1, batch_size, self.embed_size)
         shop_emb = self.shop_encoder(shop_batch).view(-1, batch_size, self.embed_size)
@@ -41,7 +41,7 @@ class RNNMatrixFactorization(nn.Module):
 
         hidden = self.trend_encoder.init_hidden(batch_size)
         trend_emb = self.trend_encoder(previous_shop_embs, hidden)
-        features = torch.cat([user_emb, shop_emb, trend_emb], dim=2)
+        features = torch.cat([hours, user_emb, shop_emb, trend_emb], dim=2)
         score = self.scorer(features)
         return score
 
